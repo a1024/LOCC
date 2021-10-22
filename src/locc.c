@@ -189,7 +189,10 @@ int		count_loc_folder(CVec path)
 				!_wcsicmp(cv_pat(wchar_t, p2, k), L"hh")||
 				!_wcsicmp(cv_pat(wchar_t, p2, k), L"asm")||
 				!_wcsicmp(cv_pat(wchar_t, p2, k), L"s")||
-				!_wcsicmp(cv_pat(wchar_t, p2, k), L"java"))
+				!_wcsicmp(cv_pat(wchar_t, p2, k), L"py")||
+				!_wcsicmp(cv_pat(wchar_t, p2, k), L"java")||
+				!_wcsicmp(cv_pat(wchar_t, p2, k), L"kt")
+				)
 			{
 				k=count_loc(cv_data(wchar_t, p2));
 				//printf("%6d\t%S\n", k, data.cFileName);
@@ -209,7 +212,7 @@ int		main(int argc, const char **argv)
 
 	printf(
 		"LoCC - Lines of Code Counter\n"
-		"Supported file types: .c .cpp .cxx .cc .hc .h .hpp .hh .asm .s .java\n\n"
+		"Supported file types: .c .cpp .cxx .cc .hc .h .hpp .hh .asm .s .py .java .kt\n\n"
 		);
 
 	if(argc>1)
@@ -240,7 +243,7 @@ int		main(int argc, const char **argv)
 		else
 			cv_str_append(path, 2, pathtail);
 		loc=count_loc_folder(path);
-		printf("\n%6d total\n\n", loc);
+		printf("\n%6d lines total\n\n", loc);
 	}
 	_getch();
 }
