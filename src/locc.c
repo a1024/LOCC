@@ -21,6 +21,7 @@
 int		file_is_readablew(const wchar_t *filename);//0: not readable, 1: regular file, 2: folder
 size_t	file_size_w(const wchar_t *filename);
 
+//windows-specific
 CVec	text_from_clipboard_a()
 {
 	char *str;
@@ -65,6 +66,16 @@ CVec	text_from_clipboard_w()
 	CloseClipboard();
 	return ret;
 }
+void	set_console_buffer_size(short w, short h)
+{
+	COORD coords={w, h};
+	HANDLE handle=GetStdHandle(STD_OUTPUT_HANDLE);
+	int success=SetConsoleScreenBufferSize(handle, coords);
+	if(!success)
+		printf("Failed to resize console buffer: %d\n\n", GetLastError());
+}
+//end windows-specific
+
 CVec	str_a2w(const char *src, int len)
 {
 	int k;
@@ -93,9 +104,15 @@ CVec	open_binary(const wchar_t *filename, int *psize)
 		*psize=size;
 	return text;
 }
+void	path_filter_bslash(wchar_t *path, int len)
+{
+	int k;
 
-WIN32_FIND_DATAW data={0};
-void	*hSearch=0;
+	for(k=0;k<len;++k)
+		if(path[k]==L'\\')
+			path[k]=L'/';
+}
+
 const wchar_t pathtail[]=L"/*";
 int		recursive=-1;//-1: uninitialized, 0: flat, 1: recursive
 int		count_loc(const wchar_t *filename)
@@ -119,6 +136,8 @@ int		count_loc(const wchar_t *filename)
 int		count_loc_folder(CVec path)
 {
 	int k, loc;
+	WIN32_FIND_DATAW data={0};
+	void *hSearch=0;
 	CVec p2;
 
 	loc=0;
@@ -149,8 +168,9 @@ int		count_loc_folder(CVec path)
 			{
 				cv_str_append(p2, 2, pathtail);//append "/*"
 				k=count_loc_folder(p2);
-				printf("%6d\t%S\n", k, p2);
-				//printf("%6d\t%S [folder]\n", k, data.cFileName);
+				if(k)
+					printf("%6d\t%S\n\n", k, cv_data(wchar_t, p2));
+					//printf("%6d\t%S [folder]\n", k, data.cFileName);
 				loc+=k;
 			}
 		}
@@ -185,15 +205,13 @@ int		main(int argc, const char **argv)
 	CVec path;
 	int type, loc;
 
-	//CVec test;
-	//const wchar_t str[]=L"D:\\C\\LOCC\\LOCC";
-	//cv_ctor_data(wchar_t, test, str, sizeof(str)/sizeof(wchar_t));
-	//printf("%S\n", cv_data(wchar_t, test));
+	set_console_buffer_size(128, 4096);
 
 	printf(
 		"LoCC - Lines of Code Counter\n"
 		"Supported file types: .c .cpp .cxx .cc .hc .h .hpp .hh .asm .s .java\n\n"
 		);
+
 	if(argc>1)
 		path=str_a2w(argv[1], strlen(argv[1]));
 	else
@@ -211,6 +229,7 @@ int		main(int argc, const char **argv)
 		path=text_from_clipboard_w();
 		printf("%S\n\n", cv_data(wchar_t, path));
 	}
+	path_filter_bslash(cv_data(wchar_t, path), cv_size(path));
 
 	if(type==1)
 		loc=count_loc(cv_data(wchar_t, path));

@@ -148,18 +148,6 @@ static void* cv_insert_v(CVec *pvec, size_t idx, size_t count, const void *data)
 		"realloc returned 0 on vector insert\n"
 		"original pointer = %p, original count = %d, insert index = %d, insert count = %d\n\n",
 		*pvec, prevcount, idx, count);
-	//newpointer=realloc(*pvec, sizeof(CVHead)+cv_bytes(*pvec));
-	//if(!newpointer)
-	//{
-	//	printf(
-	//		"\n\nRUNTIME ERROR\n"
-	//		"realloc returned 0 on vector insert\n"
-	//		"original pointer = %p, original count = %d, insert index = %d, insert count = %d\n\n",
-	//		*pvec, prevcount, idx, count);
-	//	scanf("%d", &k);
-	//	abort();
-	//}
-	//*pvec=(CVec)newpointer;
 	newpointer=cv_patv(*pvec, idx);
 	memmove(cv_patv(*pvec, idx+count), newpointer, cv_offset(*pvec, prevcount-idx));
 	if(data)
@@ -180,18 +168,6 @@ static void* cv_erase_v(CVec *pvec, size_t idx, size_t count)
 		"realloc returned 0 on vector erase\n"
 		"original pointer = %p, original count = %d, erase index = %d, erase count = %d\n\n",
 		*pvec, (*pvec)->count+count, idx, count);
-	//newpointer=realloc(*pvec, sizeof(CVHead)+cv_bytes(*pvec));
-	//if(!newpointer)
-	//{
-	//	printf(
-	//		"\n\nRUNTIME ERROR\n"
-	//		"realloc returned 0 on vector erase\n"
-	//		"original pointer = %p, original count = %d, erase index = %d, erase count = %d\n\n",
-	//		*pvec, (*pvec)->count+count, idx, count);
-	//	scanf("%d", &k);
-	//	abort();
-	//}
-	//*pvec=(CVec)newpointer;
 	return cv_patv(*pvec, idx);
 }
 static void* cv_replace_v(CVec *pvec, size_t idx, size_t rem_count, size_t ins_count, const void *data)
