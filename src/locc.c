@@ -246,4 +246,5 @@ int		main(int argc, const char **argv)
 		printf("\n%6d lines total\n\n", loc);
 	}
 	_getch();
+	return 0;
 }
